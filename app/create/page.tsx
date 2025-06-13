@@ -3,15 +3,19 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import { useWallet } from '../components/useWallet';
+import algosdk from "algosdk";
+
+const algod = new algosdk.Algodv2("", "https://testnet-api.4160.nodely.dev", "443");
 
 export default function CreateTokenPage() {
-  const { account } = useWallet();
+  const { account, peraWallet } = useWallet();
 
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
   const [supply, setSupply] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = e.target.files?.[0];
@@ -42,8 +46,9 @@ export default function CreateTokenPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     if (!account) {
       alert('Please connect your wallet first');
       return;
@@ -52,10 +57,54 @@ export default function CreateTokenPage() {
       alert('Please upload an image or video file');
       return;
     }
-    alert(
-      `Creating token:\nName: ${name}\nSymbol: ${symbol}\nSupply: ${supply}\nFile: ${file.name}`
-    );
-    // TODO: Implement Algorand token creation & file upload logic here
+    if (!name || !symbol || !supply) {
+      alert('Please fill all fields');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1. Upload file to storage (stubbed)
+      // Replace this with your actual upload logic (e.g., IPFS, S3)
+      // For now, we use a placeholder URL
+      let assetURL = 'https://your-storage.example.com/' + encodeURIComponent(file.name);
+
+      // 2. Prepare asset creation transaction
+      const suggestedParams = await algod.getTransactionParams().do();
+
+      const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
+        sender: account,
+        suggestedParams,
+        defaultFrozen: false,
+        unitName: symbol,
+        assetName: name,
+        manager: account,
+        reserve: account,
+        freeze: account,
+        clawback: account,
+        assetURL,
+        total: Number(supply),
+        decimals: 0,
+      });
+
+      const singleTxnGroups = [{ txn, signers: [account] }];
+      const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
+      console.log(signedTxn)
+
+      // Send the signed transaction to the network
+      const txId = await algod.sendRawTransaction(signedTxn).do();
+      console.log(txId)
+
+      // Wait for confirmation
+      // await algosdk.waitForConfirmation(algod, txId, 4);
+      alert('Token created successfully!');
+    } catch (error) {
+      console.error("Failed to create token:", error);
+      alert('Failed to create token. See console for details.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -65,8 +114,7 @@ export default function CreateTokenPage() {
         <div className="create-content">
           <h1>Create New Coin</h1>
           <p>
-            Choose carefully, these details can't be changed once the coin is
-            created.
+            Choose carefully, these details can't be changed once the coin is created.
           </p>
 
           <form onSubmit={handleSubmit} className="create-form">
@@ -117,19 +165,18 @@ export default function CreateTokenPage() {
 
             {file && (
               <p className="file-info">
-                Selected file:{' '}
-                <strong>{file.name}</strong> (
-                {(file.size / 1024 / 1024).toFixed(2)} MB)
+                Selected file: <strong>{file.name}</strong> ({(file.size / 1024 / 1024).toFixed(2)} MB)
               </p>
             )}
 
-            <button type="submit" disabled={!account}>
-              Create Token
+            <button type="submit" disabled={!account || loading}>
+              {loading ? "Creating..." : "Create Token"}
             </button>
           </form>
         </div>
       </main>
 
+      <p>Connected account: {account}</p>
       <style jsx>{`
         .create-container {
           background: #0e101c;

@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { PeraWalletConnect } from '@perawallet/connect';
 
+// JAESRIMMAK7PHQVGFLQ5PN7BWHAEC7IYSZNR2FCSMNPR6KNRXO2NAI5TK4
+// OD6PSORV2HI6YBP44XJ7B73Q5RPQ5OFWJZP72WDB562ASOXSGFYQZKLZWI
 const peraWallet = new PeraWalletConnect();
 
 export function useWallet() {
@@ -33,5 +35,5 @@ export function useWallet() {
     });
   }, []);
 
-  return { account, connect, disconnect };
+  return { account, connect, disconnect, peraWallet };
 }
