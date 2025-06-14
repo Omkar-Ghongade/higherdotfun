@@ -50,26 +50,26 @@ export default function CreateTokenPage() {
   async function uploadToPinata(file: File): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
-  
+
     const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
       method: 'POST',
       headers: {
-        pinata_api_key: '8af77fdb90393c92a0b2',
-        pinata_secret_api_key: 'a9105b9e6ebfc0c3f7691980ad3f5d7c1d5c64fd14c70027ebd0480951039c2e',
+        pinata_api_key: process.env.PINATA_API_KEY,
+        pinata_secret_api_key: process.env.PINATA_SECRET_API_KEY,
       },
       body: formData,
     });
-  
+
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(`Upload failed: ${res.status} - ${errorText}`);
     }
-  
+
     const data = await res.json();
     const cid = data.IpfsHash;
     return `https://gateway.pinata.cloud/ipfs/${cid}`;
   }
-  
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
