@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../components/useWallet'; // Adjust path if necessary
 import algosdk from "algosdk";
+import { useRouter } from 'next/navigation';
+import { supabase } from '../lib/supabaseClient';
+
 
 
 const algod = new algosdk.Algodv2("", "https://testnet-api.4160.nodely.dev", "443");
@@ -22,6 +25,7 @@ interface AssetData {
 }
 
 export default function TokenFeed() {
+    const router = useRouter();
     const { account, peraWallet } = useWallet();
     const [ownedTokens, setOwnedTokens] = useState<AssetData[]>([]);
     const [loadingTokens, setLoadingTokens] = useState(true);
@@ -267,6 +271,10 @@ export default function TokenFeed() {
         }
     };
 
+    const handleTokenClick = (token: AssetData) => {
+        router.push(`/token/${token.assetId}`);
+    };
+
     return (
         <>
             <main className="my-tokens-container">
@@ -310,7 +318,12 @@ export default function TokenFeed() {
                         <>
                             <div className="tokens-grid">
                                 {currentTokens.map(token => (
-                                    <div key={token.assetId} className="token-card">
+                                    <div 
+                                        key={token.assetId} 
+                                        className="token-card"
+                                        onClick={() => handleTokenClick(token)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <div className="token-header">
                                             <h3>{token.name || `Asset #${token.assetId}`}</h3>
                                             <span className="token-symbol">({token.unitName})</span>
