@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import { useWallet } from '../components/useWallet';
 import algosdk from "algosdk";
+import { supabase } from '../lib/supabaseClient';
 // import axios from 'axios';
 
 const algod = new algosdk.Algodv2("", "https://testnet-api.4160.nodely.dev", "443");
@@ -51,11 +52,12 @@ export default function CreateTokenPage() {
     const formData = new FormData();
     formData.append('file', file);
 
+
     const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
       method: 'POST',
       headers: {
-        pinata_api_key: process.env.PINATA_API_KEY,
-        pinata_secret_api_key: process.env.PINATA_SECRET_API_KEY,
+        pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
+        pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY,
       },
       body: formData,
     });
@@ -118,6 +120,23 @@ export default function CreateTokenPage() {
       const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
 
       const txId = await algod.sendRawTransaction(signedTxn).do();
+
+      const confirmedTxn = await algosdk.waitForConfirmation(algod, txId.txid, 4);
+      const assetId = confirmedTxn["assetIndex"];
+
+      // console.log(txId)
+
+      // // Insert into Supabase
+      await supabase.from('created_tokens').insert([
+        {
+          creator_address: account,
+          asset_id: assetId?.toString(),
+          asset_name: name,
+          unit_name: symbol,
+          metadata_url: '',
+        },
+      ]);
+
 
       alert('Token created successfully!');
     } catch (error) {

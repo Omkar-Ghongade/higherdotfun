@@ -30,7 +30,7 @@ export default function TokenFeed() {
     const [mintAmountInput, setMintAmountInput] = useState<string>(''); // Changed to mintAmountInput
     const [loadingRemint, setLoadingRemint] = useState(false);
     const [requestAssetIdInput, setRequestAssetIdInput] = useState<string>(''); // New state for request input
-    
+
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const tokensPerPage = 9; // 3 rows × 3 columns
@@ -169,18 +169,18 @@ export default function TokenFeed() {
             const assetURL = asset.url;
             // Use makeAssetConfigTxnWithSuggestedParamsFromObject to update total supply
             const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
-              sender: account,
-              suggestedParams,
-              defaultFrozen: false,
-              unitName: asset.unitName,
-              assetName: asset.name,
-              manager: account,
-              reserve: account,
-              freeze: account,
-              clawback: account,
-              assetURL,
-              total: newTotalSupply,
-              decimals: 0,
+                sender: account,
+                suggestedParams,
+                defaultFrozen: false,
+                unitName: asset.unitName,
+                assetName: asset.name,
+                manager: account,
+                reserve: account,
+                freeze: account,
+                clawback: account,
+                assetURL,
+                total: newTotalSupply,
+                decimals: 0,
             });
 
             const singleTxnGroups = [{ txn, signers: [account] }];
@@ -201,71 +201,71 @@ export default function TokenFeed() {
     };
 
     const handleRequestAssetDetails = async () => {
-      if (!requestAssetIdInput) {
-          alert('Please enter an Asset ID.');
-          return;
-      }
+        if (!requestAssetIdInput) {
+            alert('Please enter an Asset ID.');
+            return;
+        }
 
-      const assetId = parseInt(requestAssetIdInput, 10);
-      if (isNaN(assetId) || assetId <= 0) {
-          alert('Please enter a valid positive Asset ID.');
-          return;
-      }
+        const assetId = parseInt(requestAssetIdInput, 10);
+        if (isNaN(assetId) || assetId <= 0) {
+            alert('Please enter a valid positive Asset ID.');
+            return;
+        }
 
-      console.log(`Fetching details for Asset ID: ${assetId}`);
-      try {
-          const assetInfo = await algod.getAssetByID(assetId).do();
-          console.log(assetInfo)
-          const suggestedParams = await algod.getTransactionParams().do();
+        console.log(`Fetching details for Asset ID: ${assetId}`);
+        try {
+            const assetInfo = await algod.getAssetByID(assetId).do();
+            console.log(assetInfo)
+            const suggestedParams = await algod.getTransactionParams().do();
             const assetURL = assetInfo.params.url;
             // Use makeAssetConfigTxnWithSuggestedParamsFromObject to update total supply
-            if(assetInfo.params.creator!=account){
-              const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
-                sender: account,
-                suggestedParams,
-                defaultFrozen: false,
-                unitName: assetInfo.params.unitName,
-                assetName: assetInfo.params.name,
-                manager: assetInfo.params.creator,
-                reserve: assetInfo.params.creator,
-                freeze: assetInfo.params.creator,
-                clawback: assetInfo.params.creator,
-                assetURL,
-                total: 1,
-                decimals: 0,
-              });
-              const singleTxnGroups = [{ txn, signers: [account] }];
-            const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
+            if (assetInfo.params.creator != account) {
+                const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
+                    sender: account,
+                    suggestedParams,
+                    defaultFrozen: false,
+                    unitName: assetInfo.params.unitName,
+                    assetName: assetInfo.params.name,
+                    manager: assetInfo.params.creator,
+                    reserve: assetInfo.params.creator,
+                    freeze: assetInfo.params.creator,
+                    clawback: assetInfo.params.creator,
+                    assetURL,
+                    total: 1,
+                    decimals: 0,
+                });
+                const singleTxnGroups = [{ txn, signers: [account] }];
+                const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
 
-            const txId = await algod.sendRawTransaction(signedTxn).do();
-            }else{
-              const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
-                sender: account,
-                suggestedParams,
-                defaultFrozen: false,
-                unitName: assetInfo.params.unitName,
-                assetName: assetInfo.params.name,
-                manager: assetInfo.params.manager,
-                reserve: assetInfo.params.manager,
-                freeze: assetInfo.params.manager,
-                clawback: assetInfo.params.manager,
-                assetURL,
-                total: 1,
-                decimals: 0,
-              });
-              const singleTxnGroups = [{ txn, signers: [account] }];
-            const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
+                const txId = await algod.sendRawTransaction(signedTxn).do();
+            } else {
+                const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
+                    sender: account,
+                    suggestedParams,
+                    defaultFrozen: false,
+                    unitName: assetInfo.params.unitName,
+                    assetName: assetInfo.params.name,
+                    manager: assetInfo.params.manager,
+                    reserve: assetInfo.params.manager,
+                    freeze: assetInfo.params.manager,
+                    clawback: assetInfo.params.manager,
+                    assetURL,
+                    total: 1,
+                    decimals: 0,
+                });
+                const singleTxnGroups = [{ txn, signers: [account] }];
+                const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
 
-            const txId = await algod.sendRawTransaction(signedTxn).do();
+                const txId = await algod.sendRawTransaction(signedTxn).do();
             }
 
-            
-          // alert(`Asset details for ID ${assetId} fetched and logged to console.`);
-      } catch (error: any) {
-          console.error(`Failed to fetch details for Asset ID ${assetId}:`, error);
-          alert(`Failed to fetch asset details: ${error.message || 'An unknown error occurred.'}`);
-      }
-  };
+
+            // alert(`Asset details for ID ${assetId} fetched and logged to console.`);
+        } catch (error: any) {
+            console.error(`Failed to fetch details for Asset ID ${assetId}:`, error);
+            alert(`Failed to fetch asset details: ${error.message || 'An unknown error occurred.'}`);
+        }
+    };
 
     return (
         <>
@@ -315,7 +315,7 @@ export default function TokenFeed() {
                                             <h3>{token.name || `Asset #${token.assetId}`}</h3>
                                             <span className="token-symbol">({token.unitName})</span>
                                         </div>
-                                        
+
                                         {token.url && (
                                             <div className="token-media-container">
                                                 {token.url.includes('.mp4') ? (
@@ -400,12 +400,12 @@ export default function TokenFeed() {
                                     >
                                         ← Previous
                                     </button>
-                                    
+
                                     <div className="pagination-info">
                                         <span>Page {currentPage} of {totalPages}</span>
                                         <span className="token-count">({ownedTokens.length} tokens total)</span>
                                     </div>
-                                    
+
                                     <button
                                         onClick={() => goToPage(currentPage + 1)}
                                         disabled={currentPage === totalPages}

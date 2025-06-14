@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Header from './components/Header';
+import AllToken from './components/AllToken';
 import TokenFeed from './components/TokenFeed';
 
 export default function Home() {
@@ -27,7 +28,7 @@ export default function Home() {
         <Link href="/create" className="landing-title-link">
           <h1 className="landing-title">[start a new coin]</h1>
         </Link>
-        
+
         {/* Search Input and Button */}
         <div className="search-container">
           <input
@@ -40,8 +41,9 @@ export default function Home() {
           />
         </div>
 
+        <AllToken />
         {/* Pass the searchTerm to TokenFeed */}
-        <TokenFeed searchTerm={searchTerm} />
+
       </main>
 
       <style jsx>{`

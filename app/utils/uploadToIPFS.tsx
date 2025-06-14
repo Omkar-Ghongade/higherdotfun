@@ -1,4 +1,5 @@
 // utils/uploadToIPFS.ts
+"use server"
 import axios from 'axios';
 
 export async function uploadToIPFS(file: File): Promise<string> {
