@@ -133,7 +133,7 @@ export default function CreateTokenPage() {
           asset_id: assetId?.toString(),
           asset_name: name,
           unit_name: symbol,
-          metadata_url: '',
+          metadata_url: assetURL,
         },
       ]);
 
