@@ -323,7 +323,13 @@ export default function MyTokensPage() {
                                     <div 
                                         key={token.assetId} 
                                         className="token-card"
-                                        onClick={() => handleTokenClick(token)}
+                                        onClick={(e) => {
+                                            // Only navigate if the click is not on a button or input
+                                            if (!(e.target as HTMLElement).closest('button') && 
+                                                !(e.target as HTMLElement).closest('input')) {
+                                                handleTokenClick(token);
+                                            }
+                                        }}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <div className="token-header">
