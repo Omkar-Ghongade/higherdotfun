@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import { useWallet } from '../components/useWallet';
 import algosdk from "algosdk";
+// import axios from 'axios';
 
 const algod = new algosdk.Algodv2("", "https://testnet-api.4160.nodely.dev", "443");
 
@@ -46,6 +47,30 @@ export default function CreateTokenPage() {
     }
   }
 
+  async function uploadToPinata(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+      method: 'POST',
+      headers: {
+        pinata_api_key: '8af77fdb90393c92a0b2',
+        pinata_secret_api_key: 'a9105b9e6ebfc0c3f7691980ad3f5d7c1d5c64fd14c70027ebd0480951039c2e',
+      },
+      body: formData,
+    });
+  
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Upload failed: ${res.status} - ${errorText}`);
+    }
+  
+    const data = await res.json();
+    const cid = data.IpfsHash;
+    return `https://gateway.pinata.cloud/ipfs/${cid}`;
+  }
+  
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -65,10 +90,8 @@ export default function CreateTokenPage() {
     setLoading(true);
 
     try {
-      // 1. Upload file to storage (stubbed)
-      // Replace this with your actual upload logic (e.g., IPFS, S3)
-      // For now, we use a placeholder URL
-      let assetURL = 'https://your-storage.example.com/' + encodeURIComponent(file.name);
+      // 1. Upload file to IPFS via Pinata
+      const assetURL = await uploadToPinata(file);
 
       // 2. Prepare asset creation transaction
       const suggestedParams = await algod.getTransactionParams().do();
@@ -88,16 +111,14 @@ export default function CreateTokenPage() {
         decimals: 0,
       });
 
+      // const info = await algo
+      // console.log(info);
+
       const singleTxnGroups = [{ txn, signers: [account] }];
       const signedTxn = await peraWallet.signTransaction([singleTxnGroups]);
-      console.log(signedTxn)
 
-      // Send the signed transaction to the network
       const txId = await algod.sendRawTransaction(signedTxn).do();
-      console.log(txId)
 
-      // Wait for confirmation
-      // await algosdk.waitForConfirmation(algod, txId, 4);
       alert('Token created successfully!');
     } catch (error) {
       console.error("Failed to create token:", error);

@@ -7,9 +7,11 @@ import TokenFeed from './components/TokenFeed';
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // handleSearch is no longer explicitly called for filtering,
+  // as the filtering will happen directly in TokenFeed based on searchTerm.
+  // We keep it here as a placeholder if you need to trigger other actions on search.
   const handleSearch = () => {
     console.log("Searching for:", searchTerm);
-    // Add your search logic here
   };
 
   const handleKeyPress = (e) => {
@@ -36,15 +38,10 @@ export default function Home() {
             onKeyPress={handleKeyPress}
             className="search-input"
           />
-          <button
-            onClick={handleSearch}
-            className="search-button"
-          >
-            search
-          </button>
         </div>
 
-        <TokenFeed />
+        {/* Pass the searchTerm to TokenFeed */}
+        <TokenFeed searchTerm={searchTerm} />
       </main>
 
       <style jsx>{`
