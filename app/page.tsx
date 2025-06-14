@@ -15,7 +15,7 @@ export default function Home() {
     console.log("Searching for:", searchTerm);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
@@ -27,6 +27,10 @@ export default function Home() {
       <main className="landing-main">
         <Link href="/create" className="landing-title-link">
           <h1 className="landing-title">[start a new coin]</h1>
+        </Link>
+
+        <Link href="/remint" className="landing-title-link">
+          <h1 className="landing-title">[on demand token generation]</h1>
         </Link>
 
         {/* Search Input and Button */}
@@ -41,8 +45,9 @@ export default function Home() {
           />
         </div>
 
-        <AllToken />
+        <AllToken searchTerm={searchTerm} />
         {/* Pass the searchTerm to TokenFeed */}
+        {/* <TokenFeed /> */}
 
       </main>
 

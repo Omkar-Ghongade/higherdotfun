@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabaseClient';
 interface CreatedToken {
     id: string;
     creator_address: string;
-    asset_id: string;
+    assetId: string;
     asset_name: string;
     unit_name: string;
     metadata_url?: string;
@@ -91,7 +91,7 @@ export default function TokenDetails({ params }: { params: { id: string } }) {
 
                 <div className="token-details-card">
                     <div className="token-header">
-                        <h1>{token.asset_name || `Asset #${token.asset_id}`}</h1>
+                        <h1>{token.asset_name || `Asset #${token.assetId}`}</h1>
                         <span className="token-symbol">({token.unit_name})</span>
                     </div>
 
@@ -110,7 +110,7 @@ export default function TokenDetails({ params }: { params: { id: string } }) {
                             <h2>Token Information</h2>
                             <div className="info-row">
                                 <span className="info-label">Asset ID:</span>
-                                <span className="info-value">{token.asset_id}</span>
+                                <span className="info-value">{token.assetId}</span>
                             </div>
                             <div className="info-row">
                                 <span className="info-label">Token Name:</span>

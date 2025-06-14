@@ -14,7 +14,11 @@ interface CreatedToken {
     created_at: string;
 }
 
-export default function AllTokens() {
+interface AllTokenProps {
+    searchTerm: string;
+}
+
+export default function AllToken({ searchTerm }: AllTokenProps) {
     const [tokens, setTokens] = useState<CreatedToken[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -45,11 +49,18 @@ export default function AllTokens() {
         fetchTokens();
     }, []);
 
-    // Pagination calculations
-    const totalPages = Math.ceil(tokens.length / tokensPerPage);
+    // Filter tokens based on search term
+    const filteredTokens = tokens.filter(token => 
+        token.asset_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        token.unit_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        token.assetId?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Update pagination calculations to use filtered tokens
+    const totalPages = Math.ceil(filteredTokens.length / tokensPerPage);
     const startIndex = (currentPage - 1) * tokensPerPage;
     const endIndex = startIndex + tokensPerPage;
-    const currentTokens = tokens.slice(startIndex, endIndex);
+    const currentTokens = filteredTokens.slice(startIndex, endIndex);
 
     const goToPage = (page: number) => {
         setCurrentPage(page);
