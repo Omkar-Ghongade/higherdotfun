@@ -105,11 +105,7 @@ export default function Header() {
             >
               Connect Wallet
             </span>
-            <span
 
-            >
-              Connect
-            </span>
           </button>
         )}
       </div>
