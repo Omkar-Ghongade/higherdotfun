@@ -1,5 +1,8 @@
 'use client';
 import { useWallet } from './useWallet';
+import Logo from '../components/Logo'
+import Image from 'next/image';
+import HigherImg from '../public/higer.png'
 import { useRouter } from 'next/navigation'; // For Next.js 13+ App Router
 // import { useRouter } from 'next/router'; // For Next.js Pages Router
 // import Link from 'next/link'; // Alternative approach using Link
@@ -13,147 +16,104 @@ export default function Header() {
   };
 
   return (
-    <header className="header-simple">
-      <div className="logo" onClick={handleLogoClick}>
-        higher.fun
+    <header
+      style={{
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '1.5rem 2rem',
+        backgroundColor: '#0e101c',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.13)',
+      }}
+    >
+      {/* Absolutely positioned image */}
+      <div
+        onClick={handleLogoClick}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          cursor: 'pointer',
+          width: 200,
+          height: 200,
+        }}
+      >
+        <Image
+          width={200}
+          height={200}
+          priority
+          src={HigherImg}
+          alt="Follow us on Twitter"
+        />
       </div>
-      {/* Alternative using Link component:
-      <Link href="/" className="logo-link">
-        <div className="logo">higher.fun</div>
-      </Link>
-      */}
+
+      {/* Spacer div to prevent overlap with absolute image */}
+      <div style={{ width: 200 }} />
+
+      {/* Wallet connect/disconnect button */}
       <div>
         {account ? (
-          <button className="wallet-btn" onClick={disconnect}>
-            <span className="wallet-address-full">
+          <button
+            onClick={disconnect}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#4f46e5',
+              color: '#fff',
+              border: 'none',
+              padding: '0.7rem 1.2rem',
+              borderRadius: 8,
+              cursor: 'pointer',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span
+              style={{
+                display: window.innerWidth >= 640 ? 'inline' : 'none',
+              }}
+            >
               {account.slice(0, 6)}...{account.slice(-4)} (Disconnect)
             </span>
-            <span className="wallet-address-short">
+            <span
+              style={{
+                display: window.innerWidth < 640 ? 'inline' : 'none',
+              }}
+            >
               {account.slice(0, 4)}...{account.slice(-3)}
             </span>
           </button>
         ) : (
-          <button className="wallet-btn" onClick={connect}>
-            <span className="connect-full">Connect Wallet</span>
-            <span className="connect-short">Connect</span>
+          <button
+            onClick={connect}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#4f46e5',
+              color: '#fff',
+              border: 'none',
+              padding: '0.7rem 1.2rem',
+              borderRadius: 8,
+              cursor: 'pointer',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span
+
+            >
+              Connect Wallet
+            </span>
+            <span
+
+            >
+              Connect
+            </span>
           </button>
         )}
       </div>
-
-      <style jsx>{`
-        .header-simple {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 1.5rem 2rem;
-          background: #0e101c;
-          box-shadow: 0 2px 8px #0002;
-        }
-        .logo {
-          font-size: 1.5rem;
-          font-weight: bold;
-          color: white;
-          cursor: pointer;
-          transition: opacity 0.2s ease;
-        }
-        .logo:hover {
-          opacity: 0.8;
-        }
-        /* Alternative styles for Link approach:
-        .logo-link {
-          text-decoration: none;
-        }
-        .logo-link .logo {
-          cursor: pointer;
-          transition: opacity 0.2s ease;
-        }
-        .logo-link .logo:hover {
-          opacity: 0.8;
-        }
-        */
-        .wallet-btn {
-          background: #4f46e5;
-          color: #fff;
-          border: none;
-          padding: 0.7rem 1.2rem;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 600;
-          white-space: nowrap;
-        }
-        .wallet-btn:hover {
-          background: #6366f1;
-        }
-        .wallet-address-short,
-        .connect-short {
-          display: none;
-        }
-        .wallet-address-full,
-        .connect-full {
-          display: inline;
-        }
-
-        /* Tablet styles */
-        @media (max-width: 768px) {
-          .header-simple {
-            padding: 1.25rem 1.5rem;
-          }
-          .logo {
-            font-size: 1.3rem;
-          }
-          .wallet-btn {
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
-          }
-        }
-
-        /* Mobile styles */
-        @media (max-width: 640px) {
-          .header-simple {
-            padding: 1rem 1rem;
-          }
-          .logo {
-            font-size: 1.2rem;
-          }
-          .wallet-btn {
-            padding: 0.5rem 0.8rem;
-            font-size: 0.85rem;
-          }
-          .wallet-address-full,
-          .connect-full {
-            display: none;
-          }
-          .wallet-address-short,
-          .connect-short {
-            display: inline;
-          }
-        }
-
-        /* Very small mobile */
-        @media (max-width: 480px) {
-          .header-simple {
-            padding: 0.875rem 0.75rem;
-          }
-          .logo {
-            font-size: 1.1rem;
-          }
-          .wallet-btn {
-            padding: 0.5rem 0.6rem;
-            font-size: 0.8rem;
-          }
-        }
-
-        /* Very small screens */
-        @media (max-width: 360px) {
-          .logo {
-            font-size: 1rem;
-          }
-          .wallet-btn {
-            padding: 0.4rem 0.5rem;
-            font-size: 0.75rem;
-          }
-        }
-      `}</style>
     </header>
+
   );
 }
